@@ -72,15 +72,35 @@ class CoursesController < ApplicationController
 
   def select
     @course=Course.find_by_id(params[:id])
-    current_user.courses<<@course
-    flash={:suceess => "成功选择课程: #{@course.name}"}
-    redirect_to courses_path, flash: flash
+    count = @course.checknum
+     
+    if !count
+      count = 0
+    end
+    if count >= @course.limit_num
+       flash={:failer => "人数已达上限: #{@course.limit_num}"}
+       #redirect_to :action=>'list', flash: flash
+       redirect_to :back, flash: flash
+    elsif cousetimeinterfere(@course)
+      flash={:failer => "选课冲突: #{@course.name}"}
+      redirect_to :back, flash: flash
+    else
+      current_user.courses<<@course
+      count+=1
+      @course.update_attributes(:checknum=>"#{count}")
+      @course=Course.find_by_id(params[:id])
+      flash={:suceess => "成功选择课程: #{@course.name}"}
+      redirect_to courses_path, flash: flash
+    end
   end
 
   def quit
     @course=Course.find_by_id(params[:id])
     current_user.courses.delete(@course)
-    flash={:success => "成功退选课程: #{@course.name}"}
+    count = @course.checknum   # sub checknum
+    @course.update_attributes(:checknum=>"#{count}")
+    @course=Course.find_by_id(params[:id])
+    flash={:success => "成功退选课程: #{@course.name},#{@course.checknum}"}
     redirect_to courses_path, flash: flash
   end
 
@@ -121,5 +141,62 @@ class CoursesController < ApplicationController
                                    :credit, :limit_num, :class_room, :course_time, :course_week)
   end
 
+  def cousetimeinterfere(current_course)
+    #@course=Course.find_by_id(params[:id])
+    currtime = timespilt(current_course.course_time) # 周四，9,11
+    currweek = weeksplit(current_course.course_week) # 2,12
+
+    result=false  ## true表示冲突 false表示no冲突
+    cuid = current_user.id
+    cids = Grade.where(:user_id => "#{cuid}")#find_by_sql("select course_id from grade where user_id = #{cuid}")
+    tep=[]
+
+    cids.each do |cid|
+      tep << cid.course_id
+    end
+
+    coursesbycurrentuser = Course.find(tep) # all courses relative with current_student
+    
+    coursesbycurrentuser.each do |cs|
+      if !ifinterfere(currtime,currweek,cs)  
+        result = true
+        break                        
+      end
+    end
+    result
+  end
+
+  def weeksplit(weekstr)
+    tempweek = weekstr.split('-')
+    tempweek1=tempweek[0].delete "第"
+    tempweek2=tempweek[1].delete "周"
+    tempweek1.to_i
+    tempweek2.to_i
+    result=[tempweek1,tempweek2]
+  end
+  def timespilt(timestr)
+    temptime=timestr.split('(')
+    temptime1 = temptime[0]
+    temptime2=temptime[1].delete ")"
+    temptimea = temptime2.split('-')
+    temptime21=temptimea[0].to_i
+    temptime22=temptimea[1].to_i
+    retuslt=[temptime1,temptime21,temptime22]
+  end
+  def ifinterfere(curtime,curweek,cs)  #检查当前课程是否和已经选择的课程时间上冲突  true表示不冲突 false表示冲突
+    result = false
+    oldtime = timespilt(cs.course_time)
+    oldweek = weeksplit(cs.course_week)
+    if curweek[0] > oldweek[1] or oldweek[0] > curweek[1]
+      result = true
+    elsif curtime[0] != oldtime[0]
+      result = true
+    elsif curtime[1] > oldtime[2] or oldtime[1] > curtime[2]
+      result = true
+    else 
+      retult = false
+    end
+    result
+  end
 
 end

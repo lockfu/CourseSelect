@@ -23,7 +23,6 @@
               <th>授课方式</th>
               <th>考试方式</th>
               <th>主讲教师</th>
-
             </tr>
             </thead>
             <tbody>
@@ -35,7 +34,13 @@
                   <td><%= course.name %></td>
                   <td><%= course.credit %></td>
                   <td><%= course.limit_num %></td>
-                  <td><%= course.student_num %></td>
+                  <td>
+                    <%if !course.checknum%>
+                    <%= 0%>
+                    <%else%>
+                    <%=course.checknum%>
+                    <%end%>  
+                  </td>
                   <td><%= course.course_type %></td>
                   <td><%= course.teaching_type %></td>
                   <td><%= course.exam_type %></td>

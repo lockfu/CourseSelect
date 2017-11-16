@@ -122,6 +122,7 @@ course_map={
     32 => {course_code: "093M1002H-3", name: "计算机算法设计与分析", course_type: "一级学科核心课", credit: "60/3.0", limit_num: 220, course_week: "第5-20周	", course_time: "周二(3-4)", class_room: "教1-101", teaching_type: "课堂讲授为主", exam_type: "闭卷笔试"},
     33 => {course_code: "093M2007H", name: "数据库新技术", course_type: "一级学科普及课", credit: "40/2.0", limit_num: "", course_week: "第2-12周	", course_time: "周一(3-4)", class_room: "教1-107", teaching_type: "课堂讲授为主", exam_type: "闭卷笔试"},
     34 => {course_code: "09MGX005H", name: "Python语言导论", course_type: "公共选修课", credit: "40/1.0", limit_num: 154, course_week: "第4-14周	", course_time: "周二(7-8)", class_room: "教1-108", teaching_type: "课堂讲授为主", exam_type: "课堂开卷"},
+    35 => {course_code: "091M4021H-3", name: "高级软件工程3", course_type: "一级学科核心课", credit: "60/3.0", limit_num: "", course_week: "第2-20周 ", course_time: "周三(9-11)", class_room: "教1-109", teaching_type: "授课、讨论 ", exam_type: "闭卷笔试"}
 }
 
 teacher_map.keys.each do |index|
