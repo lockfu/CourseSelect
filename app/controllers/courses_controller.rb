@@ -129,6 +129,63 @@ class CoursesController < ApplicationController
     end
   end
 
+  # -------------------new add  批量增加课程--------------------------------
+  def selectCourseByCids
+
+    cids = params[:cids]
+    cidss = []
+    carids = cids.split(',')
+
+    carids.each do |aa|
+      cidss << (aa.to_i)
+    end
+
+    errorresult = ""
+    correctresult = ""
+
+    cidss.each do |cid|
+
+      @course=Course.find_by_id(cid)
+      count = @course.checknum
+       
+      if !count
+        count = 0
+      end
+      if count >= @course.limit_num
+          errorresult += "#{@course.name} 人数已达上限 =>  #{@course.limit_num}"
+        # flash={:failer => "人数已达上限: #{@course.limit_num}"}
+         #redirect_to :action=>'list', flash: flash
+         #redirect_to :back, flash: flash
+      elsif cousetimeinterfere(@course)
+        errorresult += "======  选课冲突: #{@course.name}"
+        #flash={:failer => "选课冲突: #{@course.name}"}
+        #redirect_to :back, flash: flash
+      else
+        current_user.courses<<@course
+        count+=1
+        @course.update_attributes(:checknum=>"#{count}")
+        @course=Course.find_by_id(cid)
+        correctresult += "成功选择课程: #{@course.name}"
+        #flash={:suceess => "成功选择课程: #{@course.name}"}
+        #redirect_to courses_path, flash: flash
+      end
+  end
+
+  if errorresult != ""
+    if correctresult != ""
+      errorresult += correctresult
+    end
+    flash={:failer => "#{errorresult}"}
+    redirect_to :back, flash: flash
+  else
+    flash={:success => "#{correctresult}"}
+    redirect_to courses_path, flash: flash
+  end
+
+
+  end
+
+
   def quit
     @course=Course.find_by_id(params[:id])
     current_user.courses.delete(@course)

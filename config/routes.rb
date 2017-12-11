@@ -27,6 +27,7 @@ Rails.application.routes.draw do
     collection do
       get :list
       get :showcollege
+      get :selectCourseByCids
     end
   end
 
