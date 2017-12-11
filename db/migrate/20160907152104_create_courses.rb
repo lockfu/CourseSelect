@@ -17,6 +17,7 @@ class CreateCourses < ActiveRecord::Migration
 
       
       t.belongs_to :teacher
+    #  t.belongs_to :college
 
       t.timestamps null: false
     end

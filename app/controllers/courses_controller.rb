@@ -59,16 +59,51 @@ class CoursesController < ApplicationController
 
   def list
     #-------QiaoCode--------
-    @course=Course.where(:open=>true)
-    @course=@course-current_user.courses
-    tmp=[]
-    @course.each do |course|
-      if course.open==true
-        tmp<<course
+    
+    # @course=Course.where(:open=>true)
+    # @course=@course-current_user.courses
+    # tmp=[]
+    # @course.each do |course|
+    #   if course.open==true
+    #     tmp<<course
+    #   end
+    # end
+    # @course=tmp
+
+
+
+    #----------------new code---------------------------
+    cids = params[:cids]
+    cidss = [];
+    carids = cids.split(',');
+    carids.each do |aa|
+      cidss << (aa.to_i)
+    end
+
+    aresults = []
+
+    cidss.each do |ids|
+      @result = Course.where(:open=>true,:college_id=>ids)
+      #@result = Course.where(:college_id=>ids)
+      aresults << @result
+    end
+
+    rr  = []
+    aresults.each do |ouu|
+      ouu.each do |inn|
+        rr << inn
       end
     end
-    @course=tmp
+
+    @course = (rr - current_user.courses)
   end
+
+
+   def showcollege
+    #-------QiaoCode--------
+    @college=College.all
+  end
+
 
   def select
     @course=Course.find_by_id(params[:id])
@@ -141,6 +176,7 @@ class CoursesController < ApplicationController
                                    :credit, :limit_num, :class_room, :course_time, :course_week)
   end
 
+# ------------------------------new add  ------------------------------
   def cousetimeinterfere(current_course)
     #@course=Course.find_by_id(params[:id])
     currtime = timespilt(current_course.course_time) # 周四，9,11

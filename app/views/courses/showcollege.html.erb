@@ -1,0 +1,42 @@
+<script type="text/javascript">
+  function checkCollege(){
+    var oids = document.getElementsByTagName("input");
+    var result=[];
+    var count=0;
+    for(var i = 0;i<oids.length-1;i++){
+      if (oids[i].checked) {
+        result[count++]=oids[i].value;
+      }
+    }
+    window.location.href="list?cids="+result;
+  }
+
+</script>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-2">
+      <%= render "shared/sidenav" %>
+
+    </div>
+    <div class="col-sm-10">
+      <div class="panel panel-primary">
+
+        <div class="panel-heading">
+          <h3 class="panel-title">选修课程</h3>
+        </div>
+
+        <div class="panel-body" style="min-height: 450px">
+             
+              <% @college.each do |college| %>
+              <% i = (rand(10001) + rand(3004)) %>
+              <input type="checkbox" id="<%=i%>" name="cids" value="<%=college.id%>"><label for="<%=i%>"><%=college.name%></label>
+              <%end%>
+              <input id="subtn" type="button" onclick="checkCollege();" value="Selected College">
+             
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
