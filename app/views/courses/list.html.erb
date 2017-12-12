@@ -1,59 +1,5 @@
-<script type="text/javascript">
-  function addCheckCourse(){
-    var oids = document.getElementsByName("cids");
-    var result=[];
-    var count=0;
-    for(var i = 0;i<oids.length;i++){
-      if (oids[i].checked) {
-        result[count++]=oids[i].value;
-      }
-    }
-    window.location.href = "selectCourseByCids?cids="+result;
-  }
+<script type="text/javascript" src="../assets/javascripts/batchOpCourse.js"></script>
 
-  function chbckick(){
-    var ohdr = document.getElementById("hdr");
-    var ocobjs = document.getElementsByName("cids");
-    if(ohdr.checked){
-      for(var i = 0;i<ocobjs.length;i++){
-        if(ocobjs[i].checked) continue;
-        ocobjs[i].checked = "checked";
-      }
-    }else{
-       for(var i = 0;i<ocobjs.length;i++){
-        if(ocobjs[i].checked) 
-         ocobjs[i].checked = "";
-      }
-    }
-  }
-
-  function childchange(cobj){
-    var ohdr = document.getElementById("hdr");
-    var ocobjs = document.getElementsByName("cids"); 
-
-    var count = 0;
-    if(cobj.checked){
-       for(var i = 0;i<ocobjs.length;i++){
-        if(ocobjs[i].checked == false) break;
-        count++;
-      }
-      if(count == ocobjs.length){
-        ohdr.checked = "checked";
-        count = 0;
-      }
-    }else{
-      for(var i = 0;i<ocobjs.length;i++){
-        if(ocobjs[i].checked == true) break;
-        count++;
-      }
-      if(count == ocobjs.length){
-        ohdr.checked = "";
-        count = 0;
-      }
-    }
-  }
-
-</script>
 <div class="container-fluid">
   <div class="row">
     <div class="col-sm-2">
@@ -89,13 +35,13 @@
             </thead>
             <tbody>
 
-            <% @course.each do |course| %>
+            <% @result.records.each do |course| %>
                 <tr>
-                  <th>
+                  <td>
                     <input type="checkbox" name="cids" value="<%=course.id%>" onchange="childchange(this);"/>
-                  </th>
+                  </td>
                   <td><%= course.course_code %></td>
-                  <td><%= course.name %></td>
+                  <td><a href="showCourseInfo?cid=<%=course.id %>"><%= course.name %></a></td>
                   <td><%= course.credit %></td>
                   <td><%= course.limit_num %></td>
                   <td>
@@ -115,7 +61,23 @@
             <% end %>
             </tbody>
           </table>
-          <input id="addCC" type="button" onclick="addCheckCourse();" value="增加选中课程" style="float: right;" />
+
+          <ul class="pagination" style="float: right;">
+
+                    <li class="page-item"><a class="page-link" href="list?cids=<%=@result.cids ? @result.cids : '' %>&curpage=<%=(@result.currentPage-1)<=0 ? 1 : (@result.currentPage-1) %>" >Previous </a></li>
+                    
+                    <%for i in @result.beginPageIndex..@result.eendPageIndex %>
+                    <li class="page-item"><a class="page-link" href="list?cids=<%=@result.cids ? @result.cids : '' %>&curpage=<%=i%>"><%=i%></a></li>
+                    
+                    <%end%>
+                    <li class="page-item">
+                     <a class="page-link" href="list?cids=<%=@result.cids ? @result.cids : '' %>&curpage=<%= (@result.currentPage+1) >= @result.pageCount ? @result.pageCount : (@result.currentPage+1) %>">Next</a>
+                    </li>
+            </ul>
+
+           <% if student_logged_in? %>
+          <input id="addCC" type="button" onclick="opCheckCourse('selectCourseByCids');" value="增加选中课程" style="margin-top: 25px;" class="btn-sm btn-info"/>
+          <%end%>
         </div>
       </div>
     </div>

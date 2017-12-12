@@ -11,6 +11,7 @@ class SessionsController < ApplicationController
       flash= {:danger => '账号或密码错误'}
     end
     redirect_to root_url, :flash => flash
+    
   end
 
   def new
