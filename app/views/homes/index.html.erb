@@ -22,51 +22,65 @@
 
 
               <center>
+
+               
+
+                 <% cid = current_user.id 
+                              @courses = Course.find_by_sql("select * from courses where id in (select course_id from grades where user_id = #{cid})")
+                              @mcourses = Course.find_by_sql("select * from courses where id in (select course_id from grades where user_id = #{cid} and ismas =1 )")
+
+                      creditsum = 0
+                      mcreditsum = 0
+                      @courses.each do |course|
+                        creditsum += course.credit.split('/')[1].to_i
+                      end
+                      @mcourses.each do |course|
+                        mcreditsum += course.credit.split('/')[1].to_i
+                      end
+                  %>
+
                   <table class="table table-striped table-bordered table-advance table-hover">
                      <thead>
                          <tr>
-                             <th>类别</th>
-                             <th>公共必修课程及学分</th>
-                             <th>公共选修课程及学分</th>
-                             <th>专业学位课学分要求</th>
-                             <th>总学分要求</th>
+                           <th></th>
+                           <th>已选课程</th>
+                           <th>学位课</th>
                         </tr>
                       </thead>
                       <tbody>
+                       
                         <tr>
-                          <th>学习要求</th>
-                          <td>
-                            <div>人文系列讲座（1学分)<br>中国特色社会主义理论与实践研究（1学分）</div>
-                            <div>自然辩证法概论（1学分）</div>
-                            <div>硕士学位英语（英语A）（3学分）</div>
-                            <div>知识产权（1学分）</div>
-                            <div>信息检索（1学分）</div>
-                            <div>专业英语（2学分）</div>
-                            </td>
-                          <td>&gt;=2学分</td>
-                          <td>&gt;=12学分学分</td>
-                          <td>&gt;=30学分学分</td>
-                        </tr>
-                        <tr>
-                          <th>选课情况</th>
-                          <td>
-                            <div>知识产权（1学分）</div>
-                            <div>人文系列讲座（1学分）</div>
-                            <div>硕士学位英语（英语A）（3学分）</div>
-                            <div>中国特色社会主义理论与实践研究（1学分）</div>
-                            </td>
-                          <td class="">2.0学分</td>
-                          <td class="">12.0学分</td>
-                          <td class="m-font-red">20.0学分</td>
-                        </tr>
-                        <tr>
-                          <th>获取学分</th>
-                          <td>
-                            </td>
-                          <td class="m-font-red">0.0学分</td>
-                          <td class="m-font-red">0.0学分</td>
-                          <td class="m-font-red">0.0学分</td>
-                        </tr>
+                         <td>课程</td>
+                         <td>
+
+                           <% @courses.each do |course|%>
+                              <%=course.name %> <br />
+                           <%end%>
+
+                         </td>
+                         <td>
+                           
+                           <% @mcourses.each do |course|%>
+                              <%=course.name %> <br />
+                           <%end%>
+                         </td>
+                       </tr>
+                       <tr>
+                         <td>学分</td>
+                         <td>
+                            
+                         <%=creditsum %>
+
+                         </td>
+                         <td>
+                           <%=mcreditsum  %>
+
+                         </td>
+                       </tr>
+
+
+
+
                       </tbody>
                     </table>
                 </center>
@@ -105,6 +119,10 @@
           <sub>在线选课系统</sub>
         </div>
       </div>
+
+
+
+
       <div style="padding-top: 50px;">
         <div class="panel panel-primary">
           <div class="panel-heading">
@@ -112,110 +130,70 @@
           </div>
           <div class="panel-body" style="min-height: 450px">
 
-            <div class="mcb-search" style="padding-bottom: 20px;">
-                <form id="frm" name="frm" action="/notice/view/1" method="post" class="m-row-form form-inline">
-                      <span style="font-size: 15px;">选择类别：</span>
-                          <select name="displayArea" class="input-small">
-                            <option value="">请选择</option>
-                            <option value="1" >公告</option>
-                            <option value="2" >消息</option>
-                            <option value="3" >政策规章</option>
-                            <option value="4" >业务流程</option>
-                            <option value="5" >使用说明</option>
-                            </select>
-                      <button type="submit" class="btn btn-primary"><i class="icon-search"></i> 查询</button>
-                </form>
-            </div>
-
             <table class="table table-striped table-hover">
               <thead>
               <tr>
                 <th>序号</th>
                 <th>标题</th>
-                <th>阅读次数</th>
                 <th>部门</th>
                 <th>发布时间</th>
                 <th>是否有附件</th>
               </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>英语B免修考试报名通知</td>
-                  <td>2650</td>
-                  <td>教务部</td>
-                  <td>2017-11-10</td>
-                  <td><input type="checkbox"  disabled="disabled"/></td>
-                </tr>
-                 <tr>
-                  <td>2</td>
-                  <td>2017-2018秋季学期课程考试时间安排</td>
-                  <td>1345</td>
-                  <td>教务部</td>
-                  <td>2017-10-10</td>
-                  <td><input type="checkbox"  disabled="disabled" checked="checked" /></td>
-                </tr>
-                 <tr>
-                  <td>3</td>
-                  <td>英语B课程增容通知</td>
-                  <td>4565</td>
-                  <td>教务部</td>
-                  <td>2017-11-10</td>
-                  <td><input type="checkbox"  disabled="disabled"/></td>
-                </tr>
-                 <tr>
-                  <td>4</td>
-                  <td>2017-2018学年春季学期预计开课统计</td>
-                  <td>456</td>
-                  <td>教务部</td>
-                  <td>2017-09-10</td>
-                  <td><input type="checkbox"  disabled="disabled"/></td>
-                </tr>
-                 <tr>
-                  <td>5</td>
-                  <td>2017-2018学年秋季学期研究生网络选课说明</td>
-                  <td>324</td>
-                  <td>教务部</td>
-                  <td>2017-10-10</td>
-                  <td><input type="checkbox"  disabled="disabled" checked="checked"/></td>
-                </tr>
-                  <tr>
-                  <td>6</td>
-                  <td>核心课修读问题Q&A</td>
-                  <td>567</td>
-                  <td>教务部</td>
-                  <td>2017-08-10</td>
-                  <td><input type="checkbox"  disabled="disabled"/></td>
-                </tr>
-                 <tr>
-                  <td>7</td>
-                  <td>英语B课程增容通知</td>
-                  <td>345</td>
-                  <td>教务部</td>
-                  <td>2017-11-10</td>
-                  <td><input type="checkbox"  disabled="disabled"/></td>
-                </tr>
-                  <tr>
-                  <td>8</td>
-                  <td>2016-2017学年春季学期研究生选课说明</td>
-                  <td>234</td>
-                  <td>教务部</td>
-                  <td>2017-9-11</td>
-                  <td><input type="checkbox"  disabled="disabled"/></td>
-                </tr>
 
+              <% 
+              curpage = params[:curpage]
+              if curpage.to_i != 0
+                curpage = curpage.to_i
+              else
+                curpage = 1
+              end
+              pageSize = 10
+              cids = [1,2]
+
+              @notices = Notice.all
+              recordCount = @notices.length
+              currecordslen = (curpage - 1)*pageSize
+
+              records = Course.find_by_sql("select * from notices  limit #{pageSize} offset #{currecordslen}")
+
+              @result = PageInfo.new(curpage,pageSize,recordCount,records,cids);
+              
+
+
+              %>
+
+              <%@result.records.each do |notice| %>
+                <tr>
+                  <td><%=notice.id %></td>
+                  <td><%=notice.title %></td>
+                  <td>
+                    <%= Department.find_by_id("#{notice.department_id}").name%>
+
+                  </td>
+                  <td><%=notice.date%></td>
+                  
+                  <td><input type="checkbox" checked="<%=(notice.isAddtional == 1) ? 'checked' : '' %>"  disabled="disabled"/></td>
+                </tr>
+                <%end%>
+                 
 
                
               </tbody>
 
             </table>
             <ul class="pagination" style="float: right;">
-                    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                     <li class="page-item"><a class="page-link" href="#">...</a></li>
-                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+
+                    <li class="page-item"><a class="page-link" href="/?cids=<%=@result.cids ? @result.cids : '' %>&curpage=<%=(@result.currentPage-1)<=0 ? 1 : (@result.currentPage-1) %>" >Previous </a></li>
+                    
+                    <%for i in @result.beginPageIndex..@result.eendPageIndex %>
+                    <li class="page-item"><a class="page-link" href="/?cids=<%=@result.cids ? @result.cids : '' %>&curpage=<%=i%>"><%=i%></a></li>
+                    
+                    <%end%>
+                    <li class="page-item">
+                     <a class="page-link" href="/?cids=<%=@result.cids ? @result.cids : '' %>&curpage=<%= (@result.currentPage+1) >= @result.pageCount ? @result.pageCount : (@result.currentPage+1) %>">Next</a>
+                    </li>
             </ul>
           </div>
         </div>

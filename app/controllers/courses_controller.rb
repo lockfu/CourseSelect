@@ -1,11 +1,12 @@
 $: << "#{File.dirname(__FILE__)}/util"
 require "pageinfo"
+require 'spreadsheet'
 class CoursesController < ApplicationController
 
   before_action :student_logged_in, only: [:select, :quit, :list]
   before_action :teacher_logged_in, only: [:new, :create, :edit, :destroy, :update, :open, :close]#add open by qiao
   before_action :logged_in, only: :index
-
+  # Spreadsheet.client_encoding = "utf-8" 
   #-------------------------for teachers----------------------
 
   def new
@@ -195,17 +196,14 @@ class CoursesController < ApplicationController
 #-----------------------new edit------------------------
   def select
     @course=Course.find_by_id(params[:id])
-    count = @course.checknum
+    @grade = Grade.where(:user_id=>"#{@current_user.id}",:course_id=>"#{@course.id}")
+    count = @course.student_num
+    isMas = params[:isMas]
     
 
-    # result = cousetimeinterfere(@course)
-
-    # render :text => "#{result}"
+    # render :text => "#{cgid}"
 
     limitNum = false
-    if !count
-      count = 0
-    end
 
     if !@course.limit_num
      limitNum = true
@@ -221,10 +219,12 @@ class CoursesController < ApplicationController
     else
       current_user.courses<<@course
       count+=1
-      @course.update_attributes(:checknum=>"#{count}")
+      @course.update_attributes(:student_num=>"#{count}")
+      cgid = @current_user.id
+      @grade[0].update_attributes(:ismas=>"#{isMas}")
       @course=Course.find_by_id(params[:id])
       flash={:suceess => "成功选择课程: #{@course.name}"}
-      redirect_to courses_path, flash: flash
+      redirect_to courses_path, failerlash: flash
     end
 
   end
@@ -233,26 +233,37 @@ class CoursesController < ApplicationController
   def selectCourseByCids
 
     cids = params[:cids]
+    mids = params[:ismass]
     cidss = []
+    midss = []
     carids = cids.split(',')
-
+    marids = mids.split(',')
     carids.each do |aa|
       cidss << (aa.to_i)
     end
+    marids.each do |aa|
+      midss << (aa.to_i)
+    end
+
+
+    
+    # render :text => "#{cidss}================== #{midss}"
 
     errorresult = ""
     correctresult = ""
 
+    ismascount = 0
+    
     cidss.each do |cid|
 
+
       @course=Course.find_by_id(cid)
-      count = @course.checknum
-       
+      count = @course.student_num
+
+      @grade = Grade.where(:user_id=>"#{current_user.id}",:course_id=>"#{cid}") 
 
       limitNum = false
-      if !count
-        count = 0
-      end
+    
 
       if !@course.limit_num
        limitNum = true
@@ -266,10 +277,14 @@ class CoursesController < ApplicationController
       else
         current_user.courses<<@course
         count+=1
-        @course.update_attributes(:checknum=>"#{count}")
+        @course.update_attributes(:student_num=>"#{count}")
+        isMasid = midss[ismascount]
+        @grade[0].update_attributes(:ismas=>"#{isMasid}")
         @course=Course.find_by_id(cid)
         correctresult += "成功选择课程: #{@course.name}"
       end
+
+      ismascount += 1
   end
 
     if errorresult != ""
@@ -296,10 +311,10 @@ class CoursesController < ApplicationController
   def quit
     @course=Course.find_by_id(params[:id])
     current_user.courses.delete(@course)
-    count = (@course.limit_num - 1)   # sub checknum
-    @course.update_attributes(:limit_num=>"#{count}")
+    count = (@course.student_num - 1)   # sub checknum
+    @course.update_attributes(:student_num =>"#{count}")
     @course=Course.find_by_id(params[:id])
-    flash={:success => "成功退选课程: #{@course.name},#{@course.limit_num}"}
+    flash={:success => "成功退选课程: #{@course.name}"}
     redirect_to courses_path, flash: flash
   end
 
@@ -315,8 +330,8 @@ class CoursesController < ApplicationController
     cidss.each do |cid|
       @course=Course.find_by_id(cid)
       current_user.courses.delete(@course)
-      count = (@course.limit_num-1)   # sub checknum
-      @course.update_attributes(:limit_num=>"#{count}")
+      count = (@course.student_num - 1)   # sub checknum
+      @course.update_attributes(:student_num=>"#{count}")
       @course=Course.find_by_id(cid)
       resultstr += "  #{@course.name}"
    end
@@ -335,7 +350,35 @@ class CoursesController < ApplicationController
 
     @result
     if teacher_logged_in?
-      @result = current_user.teaching_courses 
+      courses = current_user.teaching_courses 
+      pageSize = 4
+      curpage = params[:curpage]
+
+      if curpage.to_i != 0
+        curpage = curpage.to_i
+      else
+        curpage = 1
+      end
+
+      recordCount = courses.length
+      currecordslen = (curpage-1) * pageSize 
+      maxAsize = (currecordslen + pageSize)
+
+      records = []
+      coursea = []
+      coursea = courses
+      if maxAsize > recordCount
+        for i in currecordslen...recordCount
+          records << coursea[i]
+        end
+      else
+        records = coursea[currecordslen,pageSize]
+      end
+
+
+      cids = [1,2]
+      pageinfo = PageInfo.new(curpage,pageSize,recordCount,records,cids)
+      @result = pageinfo
 
     elsif student_logged_in?
       pageSize = 4
@@ -360,14 +403,50 @@ class CoursesController < ApplicationController
 
       currecordslen = (curpage-1) * pageSize 
 
-     records = Course.find_by_sql("select * from courses where id in (select course_id from grades where user_id = #{cuid}) limit #{pageSize} offset #{currecordslen}")
-     cids = [1,2]
+      records = Course.find_by_sql("select * from courses where id in (select course_id from grades where user_id = #{cuid}) limit #{pageSize} offset #{currecordslen}")
+      cids = [1,2]
       pageinfo = PageInfo.new(curpage,pageSize,recordCount,records,cids)
       @result = pageinfo
     end
     # render :text => "#{@result}"
     @result
   end
+
+
+
+  #----------------------teacher function----------------------------------
+  def downloadStuInfo
+    cid = params[:cid]
+    @students = User.find_by_sql("select * from users where id in (select user_id from grades where course_id = #{cid})")
+    
+    book = Spreadsheet::Workbook.new
+    sheet1 = book.create_worksheet :name => "Students"
+    blue = Spreadsheet::Format.new :color => :blue,:weight => :bold, :size => 13
+    sheet1.row(0).default_format = blue
+
+    sheet1.row(0).concat %w{  id  num name major depart }
+    crow = 1
+    @students.each do |obj|
+      sheet1[crow,0] = crow
+      sheet1[crow,1] = obj.num
+      sheet1[crow,2] = obj.name
+      sheet1[crow,3] = obj.major
+      sheet1[crow,4] = obj.department
+      crow += 1
+    end
+
+    book.write Rails.root.join('public','student.xls')
+# (Rails.root.join('app' , 'assets', 'images', 'image.jpg')
+    respond_to do |format|
+      format.xls{
+        send_file Rails.root.join('public','student.xls'), :filename => "student22.xls", :type=>"application/octet-stream;charset=utf-8", :disposition => "attachment",  :x_sendfile=>true
+        # "/home/lockjk/CourseSelect/public/student.xls", :filename => "student22.xls", :type=>"application/octet-stream;charset=utf-8", :disposition => "attachment",  :x_sendfile=>true
+        }
+      format.html
+    end
+
+  end
+
 
 
   private
@@ -463,6 +542,32 @@ class CoursesController < ApplicationController
       retult = false
     end
     result
+  end
+
+
+
+  #=======================xml define=========================
+ 
+
+  def xls_content_for(objs)
+    xls_report = StringIO.new
+    book = Spreadsheet::Workbook.new
+    sheet1 = book.create_worksheet :name => "Students"
+    blue = Spreadsheet::Format.new :color => :blue,:weight => :bold, :size => 13
+    sheet1.row(0).default_format = blue
+
+    sheet1.row(0).concat %w{  id  num name major depart }
+    crow = 1
+    objs.each do |obj|
+      sheet1[crow,0] = crow
+      sheet1[crow,1] = obj.num
+      sheet1[crow,2] = obj.name
+      sheet1[crow,3] = obj.major
+      sheet1[crow,4] = obj.department
+      crow += 1
+    end
+    book.write xls_report
+    xls_report.string
   end
 
 end

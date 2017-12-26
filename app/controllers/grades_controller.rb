@@ -12,6 +12,10 @@ class GradesController < ApplicationController
     redirect_to grades_path(course_id: params[:course_id]), flash: flash
   end
 
+  def updategrades
+    render :text => "text ......."
+  end
+
   def index
     if teacher_logged_in?
       @course=Course.find_by_id(params[:course_id])

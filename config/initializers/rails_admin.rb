@@ -6,7 +6,7 @@ RailsAdmin.config do |config|
 
   # config.authorize_with :cancan, AdminAbility
 
-  config.included_models = ['User','Course','Grade','College']
+  config.included_models = ['User','Course','Grade','College','Department','Notice']
 
   # config.model ['Relationship'] do
   #   navigation_label 'Association'

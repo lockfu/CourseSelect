@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  not: MyString
+  'null': MyString
+  date: MyString
+  not: MyString
+  'null': MyString
+  isAddtional: 1
+  default: MyString
+  0: MyString
+
+two:
+  title: MyString
+  not: MyString
+  'null': MyString
+  date: MyString
+  not: MyString
+  'null': MyString
+  isAddtional: 1
+  default: MyString
+  0: MyString

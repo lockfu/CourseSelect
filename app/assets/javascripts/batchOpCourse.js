@@ -1,19 +1,29 @@
 function opCheckCourse(url){
     var oids = document.getElementsByName("cids");
-    
+    var omasters = document.getElementsByName("master");
 
     var result=[];
+    var mresult = [];
+
     var count=0;
+    
     for(var i = 0;i<oids.length;i++){
       if (oids[i].checked) {
+
+        if(omasters[i].checked){
+          mresult[count] = 1;
+        }else{
+          mresult[count] = 0;
+        }
         result[count++]=oids[i].value;
       }
+
     }
 
     if (result.length == 0) {
       alert("请选择课程");
     }else{
-      window.location.href = url+"?cids="+result;
+      window.location.href = url+"?cids="+result + "&ismass="+ mresult;
     }
   }
 
@@ -58,3 +68,16 @@ function opCheckCourse(url){
       }
     }
   }
+
+function addCourse(url,cId,bId){
+    var oM = document.getElementById(bId);
+
+    var isMaster = 0;
+    if(oM.checked){
+      isMaster = 1;
+    }
+    // alert(isMaster);
+    // var furl = url+"?id="+cId+"&isMas="isMaster;
+    window.location.href = cId+"/"+url+"?id="+cId+"&isMas="+isMaster;
+    // alert(furl);
+}

@@ -6,6 +6,8 @@ gem 'bcrypt', '~> 3.1.11'
 gem 'faker', '~> 1.6.3'
 gem 'rails_admin', '~> 0.8.1'
 
+gem 'spreadsheet'
+
 # gem 'carrierwave'
 # gem 'paperclip'
 # gem 'will_paginate'
@@ -66,5 +68,3 @@ end
 group :production do
   gem 'rails_12factor'
 end
-
-

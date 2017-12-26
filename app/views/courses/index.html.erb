@@ -17,15 +17,18 @@
           <% end %>
         </div>
 
-        
 
         <div class="panel-body">
+
+
           <table class="table table-responsive table-condensed table-hover">
             <thead>
             <tr>
+
               <th>
                 <input type="checkbox" name="call" id="hdr" onchange="chbckick();" /><label for="hdr">全选</label>
               </th>
+
               <th>课程编号</th>
               <th>课程名称</th>
               <th>课时/学分</th>
@@ -34,7 +37,7 @@
             </tr>
 
             <tbody>
-            <% if student_logged_in? %>
+            
               <% @result.records.each do |course| %>
               <tr>
                 <td>
@@ -53,48 +56,25 @@
                       <% else %>
                           <td><%= link_to "开通", open_course_url(course), class: 'btn btn-xs btn-info' %></td>
                       <% end %>
+
                       <td><%= link_to "删除", course_path(course), :method => "delete", class: 'btn btn-xs btn-danger', :data => {confirm: '确定要删除此课程?'} %></td>
+
+
+
+                      <td><a href="/courses/downloadStuInfo?cid=<%=course.id%>&format=xls"><span class="btn btn-xs btn-info">导出选课学生信息</span></a> </td>
+                 
+                     
                   <% elsif student_logged_in? %>
                       <td><%= link_to "删除", quit_course_path(course), class: 'btn-sm btn-danger' %></td>
                   <% end %>
                 </tr>
                 <%end%>
-            <% elsif teacher_logged_in? %>
-              <% @result.each do |course| %>
-              <tr>
-                <td>
-                    <input type="checkbox" name="cids" value="<%=course.id%>" onchange="childchange(this);"/>
-                  </td>
-                  <td><%= course.course_code %></td>
-                  <td><a href="courses/showCourseInfo?cid=<%=course.id %>"><%= course.name %></a></td>
-                  <td><%= course.credit %> </td>
-                  <td><%= course.exam_type %></td>
-                  <td><%= course.teacher.name %></td>
-
-                  <% if teacher_logged_in? %>
-                      <td><%= link_to "编辑", edit_course_url(course), class: 'btn btn-xs btn-info' %></td>
-                      <% if course.open? %>
-                          <td><%= link_to "关闭", close_course_url(course), class: 'btn btn-xs btn-info' %></td>
-                      <% else %>
-                          <td><%= link_to "开通", open_course_url(course), class: 'btn btn-xs btn-info' %></td>
-                      <% end %>
-                      <td><%= link_to "删除", course_path(course), :method => "delete", class: 'btn btn-xs btn-danger', :data => {confirm: '确定要删除此课程?'} %></td>
-                  <% elsif student_logged_in? %>
-                      <td><%= link_to "删除", quit_course_path(course), class: 'btn-sm btn-danger' %></td>
-                  <% end %>
-                </tr>
-            <%end%>
-                
-            <% end %>
+            
             </tbody>
           </table>
           
 
-           
          
-
-
-          <% if student_logged_in? %>
           <ul class="pagination" style="float: right;">
 
                     <li class="page-item"><a class="page-link" href="/courses?curpage=<%=(@result.currentPage-1)<=0 ? 1 : (@result.currentPage-1) %>" >Previous </a></li>
@@ -107,6 +87,7 @@
                      <a class="page-link" href="/courses?curpage=<%= (@result.currentPage+1) >= @result.pageCount ? @result.pageCount : (@result.currentPage+1) %>">Next</a>
                     </li>
             </ul>
+          <% if student_logged_in? %>
           <input id="addCC" type="button" onclick="opCheckCourse('courses/delCourseByCids');" value="删除选中课程" style="margin-top: 25px;" class="btn-sm btn-danger" />
           <%end%>
         

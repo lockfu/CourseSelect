@@ -1,0 +1,63 @@
+                    Prefix Verb   URI Pattern                           Controller#Action
+                  colleges GET    /colleges(.:format)                   colleges#index
+                           POST   /colleges(.:format)                   colleges#create
+               new_college GET    /colleges/new(.:format)               colleges#new
+              edit_college GET    /colleges/:id/edit(.:format)          colleges#edit
+                   college GET    /colleges/:id(.:format)               colleges#show
+                           PATCH  /colleges/:id(.:format)               colleges#update
+                           PUT    /colleges/:id(.:format)               colleges#update
+                           DELETE /colleges/:id(.:format)               colleges#destroy
+               departments GET    /departments(.:format)                departments#index
+                           POST   /departments(.:format)                departments#create
+            new_department GET    /departments/new(.:format)            departments#new
+           edit_department GET    /departments/:id/edit(.:format)       departments#edit
+                department GET    /departments/:id(.:format)            departments#show
+                           PATCH  /departments/:id(.:format)            departments#update
+                           PUT    /departments/:id(.:format)            departments#update
+                           DELETE /departments/:id(.:format)            departments#destroy
+               rails_admin        /admin                                RailsAdmin::Engine
+                      root GET    /                                     homes#index
+             select_course GET    /courses/:id/select(.:format)         courses#select
+               quit_course GET    /courses/:id/quit(.:format)           courses#quit
+               open_course GET    /courses/:id/open(.:format)           courses#open
+              close_course GET    /courses/:id/close(.:format)          courses#close
+              list_courses GET    /courses/list(.:format)               courses#list
+       showcollege_courses GET    /courses/showcollege(.:format)        courses#showcollege
+selectCourseByCids_courses GET    /courses/selectCourseByCids(.:format) courses#selectCourseByCids
+    showCourseInfo_courses GET    /courses/showCourseInfo(.:format)     courses#showCourseInfo
+   delCourseByCids_courses GET    /courses/delCourseByCids(.:format)    courses#delCourseByCids
+                   courses GET    /courses(.:format)                    courses#index
+                           POST   /courses(.:format)                    courses#create
+                new_course GET    /courses/new(.:format)                courses#new
+               edit_course GET    /courses/:id/edit(.:format)           courses#edit
+                    course GET    /courses/:id(.:format)                courses#show
+                           PATCH  /courses/:id(.:format)                courses#update
+                           PUT    /courses/:id(.:format)                courses#update
+                           DELETE /courses/:id(.:format)                courses#destroy
+                    grades GET    /grades(.:format)                     grades#index
+                     grade PATCH  /grades/:id(.:format)                 grades#update
+                           PUT    /grades/:id(.:format)                 grades#update
+                     users GET    /users(.:format)                      users#index
+                           POST   /users(.:format)                      users#create
+                  new_user GET    /users/new(.:format)                  users#new
+                 edit_user GET    /users/:id/edit(.:format)             users#edit
+                      user GET    /users/:id(.:format)                  users#show
+                           PATCH  /users/:id(.:format)                  users#update
+                           PUT    /users/:id(.:format)                  users#update
+                           DELETE /users/:id(.:format)                  users#destroy
+            sessions_login GET    /sessions/login(.:format)             sessions#new
+                           POST   /sessions/login(.:format)             sessions#create
+           sessions_logout DELETE /sessions/logout(.:format)            sessions#destroy
+
+Routes for RailsAdmin::Engine:
+    dashboard GET         /                                  rails_admin/main#dashboard
+        index GET|POST    /:model_name(.:format)             rails_admin/main#index
+          new GET|POST    /:model_name/new(.:format)         rails_admin/main#new
+       export GET|POST    /:model_name/export(.:format)      rails_admin/main#export
+history_index GET         /:model_name/history(.:format)     rails_admin/main#history_index
+  bulk_delete POST|DELETE /:model_name/bulk_delete(.:format) rails_admin/main#bulk_delete
+  bulk_action POST        /:model_name/bulk_action(.:format) rails_admin/main#bulk_action
+         show GET         /:model_name/:id(.:format)         rails_admin/main#show
+         edit GET|PUT     /:model_name/:id/edit(.:format)    rails_admin/main#edit
+       delete GET|DELETE  /:model_name/:id/delete(.:format)  rails_admin/main#delete
+ history_show GET         /:model_name/:id/history(.:format) rails_admin/main#history_show

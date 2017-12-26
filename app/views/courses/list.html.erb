@@ -1,4 +1,4 @@
-<script type="text/javascript" src="../assets/javascripts/batchOpCourse.js"></script>
+
 
 <div class="container-fluid">
   <div class="row">
@@ -9,12 +9,11 @@
     <div class="col-sm-10">
       <div class="panel panel-primary">
 
-      
         <div class="panel-heading">
           <h3 class="panel-title">选修课程</h3>
         </div>
         <div class="panel-body" style="min-height: 450px">
-          <table class="table table-striped table-hover">
+          <table class="table table-striped table-hover" >
             <thead>
 
             <tr>
@@ -23,6 +22,7 @@
               </th>
               <th>课程编号</th>
               <th>课程名称</th>
+              <th>学位课</th>
               <th>课时/学分</th>
               <th>限选</th>
               <th>已选</th>
@@ -35,33 +35,46 @@
             </thead>
             <tbody>
 
+
             <% @result.records.each do |course| %>
+                <% i = rand(99999) + rand(3333445)%>
                 <tr>
                   <td>
                     <input type="checkbox" name="cids" value="<%=course.id%>" onchange="childchange(this);"/>
+                   
                   </td>
                   <td><%= course.course_code %></td>
                   <td><a href="showCourseInfo?cid=<%=course.id %>"><%= course.name %></a></td>
+                  <td>
+                    <input type="checkbox" name="master" id="isMas<%=i%>"  />                    
+                  </td>
                   <td><%= course.credit %></td>
                   <td><%= course.limit_num %></td>
                   <td>
-                    <%if !course.checknum%>
+                    <%if !course.student_num%>
                     <%= 0%>
                     <%else%>
-                    <%=course.checknum%>
+                    <%=course.student_num%>
                     <%end%>  
                   </td>
                   <td><%= course.course_type %></td>
                   <td><%= course.teaching_type %></td>
                   <td><%= course.exam_type %></td>
                   <td><%= course.teacher.name %></td>
-                  <td><%= link_to "加入课程", select_course_path(course), class: 'btn-sm btn-info' %></td>
+                  
+                  <td>
+                    
+                     <input id="addCC" type="button" onclick="addCourse('select',<%=course.id%>,'isMas<%=i%>');" value="选中课程" class= 'btn btn-xs btn-info'/>
+                   
+                  </td>
+                 
+                 
 
                 </tr>
             <% end %>
             </tbody>
           </table>
-
+            
           <ul class="pagination" style="float: right;">
 
                     <li class="page-item"><a class="page-link" href="list?cids=<%=@result.cids ? @result.cids : '' %>&curpage=<%=(@result.currentPage-1)<=0 ? 1 : (@result.currentPage-1) %>" >Previous </a></li>
@@ -76,7 +89,7 @@
             </ul>
 
            <% if student_logged_in? %>
-          <input id="addCC" type="button" onclick="opCheckCourse('selectCourseByCids');" value="增加选中课程" style="margin-top: 25px;" class="btn-sm btn-info"/>
+          <input id="addCC" type="button" onclick="opCheckCourse('selectCourseByCids');" value="增加选中课程" style="margin-top: 25px;" class="btn btn-xs btn-info"/>
           <%end%>
         </div>
       </div>
@@ -84,4 +97,4 @@
   </div>
 </div>
 
-
+<script type="text/javascript" src="../assets/javascripts/batchOpCourse.js"></script>
