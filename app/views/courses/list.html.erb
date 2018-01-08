@@ -41,12 +41,12 @@
                 <tr>
                   <td>
                     <input type="checkbox" name="cids" value="<%=course.id%>" onchange="childchange(this);"/>
-                   
+
                   </td>
                   <td><%= course.course_code %></td>
                   <td><a href="showCourseInfo?cid=<%=course.id %>"><%= course.name %></a></td>
                   <td>
-                    <input type="checkbox" name="master" id="isMas<%=i%>"  />                    
+                    <input type="checkbox" name="master" id="isMas<%=i%>"  />
                   </td>
                   <td><%= course.credit %></td>
                   <td><%= course.limit_num %></td>
@@ -55,33 +55,33 @@
                     <%= 0%>
                     <%else%>
                     <%=course.student_num%>
-                    <%end%>  
+                    <%end%>
                   </td>
                   <td><%= course.course_type %></td>
                   <td><%= course.teaching_type %></td>
                   <td><%= course.exam_type %></td>
                   <td><%= course.teacher.name %></td>
-                  
+
                   <td>
-                    
+
                      <input id="addCC" type="button" onclick="addCourse('select',<%=course.id%>,'isMas<%=i%>');" value="选中课程" class= 'btn btn-xs btn-info'/>
-                   
+
                   </td>
-                 
-                 
+
+
 
                 </tr>
             <% end %>
             </tbody>
           </table>
-            
+
           <ul class="pagination" style="float: right;">
 
                     <li class="page-item"><a class="page-link" href="list?cids=<%=@result.cids ? @result.cids : '' %>&curpage=<%=(@result.currentPage-1)<=0 ? 1 : (@result.currentPage-1) %>" >Previous </a></li>
-                    
+
                     <%for i in @result.beginPageIndex..@result.eendPageIndex %>
                     <li class="page-item"><a class="page-link" href="list?cids=<%=@result.cids ? @result.cids : '' %>&curpage=<%=i%>"><%=i%></a></li>
-                    
+
                     <%end%>
                     <li class="page-item">
                      <a class="page-link" href="list?cids=<%=@result.cids ? @result.cids : '' %>&curpage=<%= (@result.currentPage+1) >= @result.pageCount ? @result.pageCount : (@result.currentPage+1) %>">Next</a>

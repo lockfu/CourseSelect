@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   resources :colleges
   resources :departments
 
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
@@ -25,28 +26,42 @@ Rails.application.routes.draw do
       get :select
       get :quit
       get :open
-      get :close  
-
+      get :close
+      get :editexam
     end
     collection do
       get :list
       get :showcollege
       get :selectCourseByCids
       get :showCourseInfo
+      get :showNoticeInfo
       get :delCourseByCids
       get :downloadStuInfo
       get :down
+      get :exam
+      get :timetable
+      get :showstudents
     end
   end
   # get 'courses/downloadStuInfo'
-  resources :grades, only: [:index, :update, :updategrades]
+  # resources :grades, only: [:index, :update, :updategrades]
   resources :users
- 
+
+  resources :grades do
+    collection do
+      get :updategrades
+      get :downstudent
+      get :downteacher
+      get :studentInfo
+    end
+  end
+
+
 
   get 'sessions/login' => 'sessions#new'
   post 'sessions/login' => 'sessions#create'
   delete 'sessions/logout' => 'sessions#destroy'
-   
+
 
   # Example resource route with options:
   #   resources :products do

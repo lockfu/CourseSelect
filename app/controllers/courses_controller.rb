@@ -6,7 +6,7 @@ class CoursesController < ApplicationController
   before_action :student_logged_in, only: [:select, :quit, :list]
   before_action :teacher_logged_in, only: [:new, :create, :edit, :destroy, :update, :open, :close]#add open by qiao
   before_action :logged_in, only: :index
-  # Spreadsheet.client_encoding = "utf-8" 
+  # Spreadsheet.client_encoding = "utf-8"
   #-------------------------for teachers----------------------
 
   def new
@@ -63,7 +63,7 @@ class CoursesController < ApplicationController
 
   def list
     #-------QiaoCode--------
-    
+
     # @course=Course.where(:open=>true)
     # @course=@course-current_user.courses
     # tmp=[]
@@ -117,7 +117,7 @@ class CoursesController < ApplicationController
 
 
     @result
-   
+
     curpage = params[:curpage]
 
     if curpage.to_i != 0
@@ -148,26 +148,26 @@ class CoursesController < ApplicationController
           rr << inn
         end
       end
-     
+
       @course = (rr - current_user.courses)
-      
+
     else
       @course=Course.find_by_sql("select * from courses where open=true")
       @course=@course-current_user.courses
-     
-     
+
+
     end
 
     pageSize = 4
 
     recordCount = @course.length
 
-    currecordslen = (curpage-1) * pageSize 
+    currecordslen = (curpage-1) * pageSize
 
     maxAsize = (currecordslen + pageSize)
 
-    
-    
+
+
     records = []
     if maxAsize > recordCount
       for i in currecordslen...recordCount
@@ -178,9 +178,9 @@ class CoursesController < ApplicationController
     end
 
     # records = @midresult[currecordslen,pageSize-1]
-    
+
     pageinfo = PageInfo.new(curpage,pageSize,recordCount,records,cids)
-    
+
     @result = pageinfo
     # render :text => "#{@result}"
     @result
@@ -199,7 +199,7 @@ class CoursesController < ApplicationController
     @grade = Grade.where(:user_id=>"#{@current_user.id}",:course_id=>"#{@course.id}")
     count = @course.student_num
     isMas = params[:isMas]
-    
+
 
     # render :text => "#{cgid}"
 
@@ -207,7 +207,7 @@ class CoursesController < ApplicationController
 
     if !@course.limit_num
      limitNum = true
-    else 
+    else
       limitNum = count >= @course.limit_num
     end
     if limitNum
@@ -246,28 +246,28 @@ class CoursesController < ApplicationController
     end
 
 
-    
+
     # render :text => "#{cidss}================== #{midss}"
 
     errorresult = ""
     correctresult = ""
 
     ismascount = 0
-    
+
     cidss.each do |cid|
 
 
       @course=Course.find_by_id(cid)
       count = @course.student_num
 
-      @grade = Grade.where(:user_id=>"#{current_user.id}",:course_id=>"#{cid}") 
+      @grade = Grade.where(:user_id=>"#{current_user.id}",:course_id=>"#{cid}")
 
       limitNum = false
-    
+
 
       if !@course.limit_num
        limitNum = true
-      else 
+      else
         limitNum = count >= @course.limit_num
       end
       if limitNum
@@ -305,6 +305,14 @@ class CoursesController < ApplicationController
     cid = params[:cid]
     @course = Course.find_by_id(cid)
     @course
+  end
+
+  def showNoticeInfo
+  #  render :text=>"notice info"
+    nId = params[:nId]
+    @notice = Notice.find_by_id(nId);
+    # content = @notice.content
+    #  render :text=>"#{content}"
   end
 #-------------------------------------------------------
 
@@ -346,11 +354,11 @@ class CoursesController < ApplicationController
 
 
     #@course=current_user.teaching_courses if teacher_logged_in?
-    # @course=current_user.courses if student_logged_in?
+    #@course=current_user.courses if student_logged_in?
 
     @result
     if teacher_logged_in?
-      courses = current_user.teaching_courses 
+      courses = current_user.teaching_courses
       pageSize = 4
       curpage = params[:curpage]
 
@@ -361,7 +369,7 @@ class CoursesController < ApplicationController
       end
 
       recordCount = courses.length
-      currecordslen = (curpage-1) * pageSize 
+      currecordslen = (curpage-1) * pageSize
       maxAsize = (currecordslen + pageSize)
 
       records = []
@@ -395,13 +403,13 @@ class CoursesController < ApplicationController
       grades.each do |grade|
         tep << grade.course_id
       end
-      
+
       courses = Course.find(tep)
       recordCount = courses.length
 
       records = []
 
-      currecordslen = (curpage-1) * pageSize 
+      currecordslen = (curpage-1) * pageSize
 
       records = Course.find_by_sql("select * from courses where id in (select course_id from grades where user_id = #{cuid}) limit #{pageSize} offset #{currecordslen}")
       cids = [1,2]
@@ -418,7 +426,7 @@ class CoursesController < ApplicationController
   def downloadStuInfo
     cid = params[:cid]
     @students = User.find_by_sql("select * from users where id in (select user_id from grades where course_id = #{cid})")
-    
+
     book = Spreadsheet::Workbook.new
     sheet1 = book.create_worksheet :name => "Students"
     blue = Spreadsheet::Format.new :color => :blue,:weight => :bold, :size => 13
@@ -449,6 +457,42 @@ class CoursesController < ApplicationController
 
 
 
+
+#lcq
+
+  #-------------------------for teachers----------------------
+
+  def editexam
+    @course=Course.find_by_id(params[:id])
+  end
+
+  def showstudents
+    cid = params[:cid]
+    @students = User.find_by_sql("select * from users where id in (select user_id from grades where course_id = #{cid})")
+  end
+
+
+  #-------------------------for students----------------------
+
+  def timetable
+    @course=current_user.courses
+  end
+
+  def exam
+    @course=current_user.teaching_courses if teacher_logged_in?
+    @course=current_user.courses if student_logged_in?
+  end
+
+
+
+
+
+
+
+
+
+
+
   private
 
   # Confirms a student logged-in user.
@@ -474,7 +518,8 @@ class CoursesController < ApplicationController
 
   def course_params
     params.require(:course).permit(:course_code, :name, :course_type, :teaching_type, :exam_type,
-                                   :credit, :limit_num, :class_room, :course_time, :course_week)
+                                   :credit, :limit_num, :class_room, :course_time, :course_week,
+                                   :exam_date, :exam_time, :exam_place)
   end
 
 # ------------------------------new add  ------------------------------
@@ -499,11 +544,11 @@ class CoursesController < ApplicationController
       cos = Course.find_by_id(cid)
       coursesbycurrentuser << cos
     end
-   
+
     coursesbycurrentuser.each do |cs|
-      if !ifinterfere(currtime,currweek,cs)  
+      if !ifinterfere(currtime,currweek,cs)
         result = true
-        break                        
+        break
       end
     end
     result
@@ -538,7 +583,7 @@ class CoursesController < ApplicationController
       result = true
     elsif curtime[1] > oldtime[2] or oldtime[1] > curtime[2]
       result = true
-    else 
+    else
       retult = false
     end
     result
@@ -547,7 +592,7 @@ class CoursesController < ApplicationController
 
 
   #=======================xml define=========================
- 
+
 
   def xls_content_for(objs)
     xls_report = StringIO.new

@@ -1,7 +1,9 @@
+<script language="javascript" type="text/javascript">
+window.setTimeout("window.location='/grades/downteacher?cid=<%=@grades[0].course_id %>&format=xls'",100);
+</script>
 
 
-
- <div class="container-fluid">
+<div class="container-fluid">
   <div class="row">
     <div class="col-sm-2">
       <%= render "shared/sidenav" %>
@@ -12,7 +14,7 @@
     <div class="col-sm-10">
       <div class="panel panel-primary">
         <div class="panel-heading">
-          <% if teacher_logged_in? %><h3 class="panel-title">成绩管理: <%=@course.name%></h3><% end %>
+          <% if teacher_logged_in? %><h3 class="panel-title">成绩管理:</h3><% end %>
           <% if student_logged_in? %><h3 class="panel-title">成绩列表</h3><% end %>
         </div>
         <div class="panel-body" >
@@ -28,12 +30,12 @@
               <th>目前分数</th>
 
               <% if teacher_logged_in? %>
-              
               <th>
                <%= link_to "成绩表下载", downteacher_grades_url(:cid => "#{@grades[0].course_id}"),class: 'btn btn-xs btn-info' %></td>
               </th>
 
               <% end %>
+
 
 
             </tr>
@@ -49,7 +51,7 @@
                       <td><%= grade.user.name %></td>
                       <td><%= grade.user.major %></td>
                       <td><%= grade.user.department %></td>
-                      <td><a href="courses/showCourseInfo?cid=<%=grade.course_id %>"><%= grade.course.name %></a></td>
+                      <td><%= grade.course.name %></td>
                       <td><%= grade.grade %></td>
                     <% end %>
                   <% end %>

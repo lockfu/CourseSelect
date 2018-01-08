@@ -58,10 +58,11 @@
                       <% end %>
 
                       <td><%= link_to "删除", course_path(course), :method => "delete", class: 'btn btn-xs btn-danger', :data => {confirm: '确定要删除此课程?'} %></td>
+                      
+                      <td><%= link_to "查看选课名单", showstudents_courses_url(:cid => "#{course.id}"), class: 'btn btn-xs btn-info' %></td>
 
+                      <td><%= link_to "下载选课名单", studentInfo_grades_url(:cid => "#{course.id}") ,class: 'btn btn-xs btn-info' %></td>
 
-
-                      <td><a href="/courses/downloadStuInfo?cid=<%=course.id%>&format=xls"><span class="btn btn-xs btn-info">导出选课学生信息</span></a> </td>
                  
                      
                   <% elsif student_logged_in? %>
